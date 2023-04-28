@@ -19,7 +19,20 @@ export class GetEventOrdersUseCase {
     const formattedOrders = await Promise.all(
       items.items.map(async (order) => {
         // Extract the relevant fields from the order and its associated collection and token
-        const { id, price, endTime, signer } = order.collection.order;
+        const {
+          id,
+          price,
+          endTime,
+          signer,
+          hash,
+          quoteType,
+          globalNonce,
+          subsetNonce,
+          currency,
+          startTime,
+          itemIds,
+          amounts,
+        } = order.collection.order;
         const {
           name: collectionName,
           description: collectionDescription,
@@ -33,6 +46,7 @@ export class GetEventOrdersUseCase {
         const imageURI = token?.imageURI;
         const itemIsExplicit = token?.isExplicit;
         const itemIsAnimated = token?.isAnimated;
+
         // Compute the floor price for the collection associated with the current order
         const floorPrice = await this.orderRepository.getCollectionFloorPrice(
           order.collection.id as string,
@@ -56,15 +70,38 @@ export class GetEventOrdersUseCase {
             symbol: collectionSymbol,
             admin: collectionAdmin,
             floorPrice,
+            websiteLink: order.collection.websiteLink,
+            facebookLink: order.collection.facebookLink,
+            instagramLink: order.collection.instagramLink,
+            telegramLink: order.collection.telegramLink,
+            mediumLink: order.collection.mediumLink,
+            discordLink: order.collection.discordLink,
+            isVerified: order.collection.isVerified,
+            isExplicit: order.collection.isExplicit,
+            logoURI: order.collection.logoURI,
+            bannerURI: order.collection.bannerURI,
           },
-          item: {
-            id: itemId ? itemId : null,
-            name: itemName,
-            description: itemDescription,
-            imageURI,
-            isExplicit: itemIsExplicit,
-            isAnimated: itemIsAnimated,
+          order: {
+            id: order.collection.order.id,
+            hash,
+            quoteType,
+            globalNonce,
+            subsetNonce,
+            currency,
+            startTime,
+            itemIds,
+            amounts,
           },
+          item: token
+            ? {
+                id: itemId ? itemId : null,
+                name: itemName,
+                description: itemDescription,
+                imageURI,
+                isExplicit: itemIsExplicit,
+                isAnimated: itemIsAnimated,
+              }
+            : {},
         };
       }),
     );

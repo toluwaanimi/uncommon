@@ -28,7 +28,7 @@ export class OrderRepository implements IOrderRepository {
     return await this.orderRepository
       .createQueryBuilder('order')
       .select('MIN(price)')
-      .where('order.collectionId = :collectionId', { collectionId: id })
+      .where('order.collection_id = :collectionId', { collectionId: id })
       .getRawOne();
   }
 }

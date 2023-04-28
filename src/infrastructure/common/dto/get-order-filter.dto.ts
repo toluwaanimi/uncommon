@@ -42,17 +42,6 @@ export class OrderFilterParamsDTO {
   price_max?: number;
 
   @ApiProperty({
-    description: 'The page number',
-    required: false,
-    type: Number,
-  })
-  @IsOptional()
-  @IsNumber()
-  @Min(1)
-  @Transform(({ value }) => parseInt(value, 10))
-  page?: number;
-
-  @ApiProperty({
     description: 'The number of items to offset',
     required: false,
     type: Number,

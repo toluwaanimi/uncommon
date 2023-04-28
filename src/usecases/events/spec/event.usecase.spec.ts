@@ -60,7 +60,7 @@ describe('EventService', () => {
   // Start test block for getCollectionListing method
   describe('getCollectionListing', () => {
     it('should return a pagination object', async () => {
-      const filterParams: OrderFilterParams = { page: 1, offset: 10 };
+      const filterParams: OrderFilterParams = { offset: 10 };
       const pagination = await eventRepository.getCollectionListing(
         filterParams,
       );

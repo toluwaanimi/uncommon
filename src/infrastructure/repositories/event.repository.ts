@@ -16,10 +16,21 @@ export class EventRepository implements IEventRepository {
     params: OrderFilterParams,
   ): Promise<Pagination<EventModel>> {
     // Create the query builder
+    // Create a query builder for the `event` entity
     const queryBuilder = await this.eventRepository
       .createQueryBuilder('event')
+
+      // Join the `collection` entity with `event`
       .leftJoinAndSelect('event.collection', 'collection')
-      .leftJoinAndSelect('collection.order', 'order');
+
+      // Join the `order` entity with `collection`
+      .leftJoinAndSelect('collection.order', 'order')
+
+      .leftJoinAndSelect('collection.token', 'token')
+
+      // Filter the results where the length of the `item_ids` array in `order` is 0
+      // exclude multi-item orders
+      .where('COALESCE(ARRAY_LENGTH(order.item_ids, 1), 0) = 0');
 
     // Filter by order type if specified
     if (params.order_type) {
@@ -50,7 +61,7 @@ export class EventRepository implements IEventRepository {
 
     // Paginate the results and return them
     return await paginate(queryBuilder, {
-      page: params.offset,
+      page: params.offset ? params.offset : 1,
       limit: 10,
     });
   }

@@ -3,7 +3,10 @@ import { ServiceInterface } from '../../../domain/adapters/service.interface';
 
 export class HttpResponse {
   // static method to send success response
-  static send(message: string, data?: ServiceInterface) {
+  static send<T = any, U = any>(
+    message: string,
+    data?: ServiceInterface<T, U>,
+  ) {
     return {
       status: true,
       message,

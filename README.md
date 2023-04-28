@@ -134,6 +134,13 @@ To run a docker image of Postgres and Redis
 
 ---
 
+## Swagger
+
+Swagger is a popular tool for documenting APIs, and it provides a user-friendly interface that allows developers to
+explore and test API endpoints. In order to view Swagger documentation for an API.
+
+The route http://localhost:3000/docs can be used to view the Swagger documentation
+
 # Domain Driven Architecture
 
 The approach of Domain Driven Architecture (DDA) was taken in this project to ensure that the code is organized around
@@ -294,6 +301,127 @@ In summary, BullJS is a powerful tool for managing background jobs in Node.js, a
 convenient way to monitor and manage your jobs. By using BullJS, you can create reliable and scalable Node.js
 applications that can handle a variety of tasks and background jobs.
 
+# Orders API Endpoint
+
+This API endpoint allows you to fetch orders for a given collection and filter them by order type, price range, and
+pagination.
+
+## Endpoint URL
+
+`GET http://localhost:3000/orders`
+
+## Query Parameters
+
+`order_type`: The order type to filter by (optional). Use a for ascending order, d for descending order. Defaults to
+ascending order.
+`price_min`: The minimum price of orders to include (optional)
+`price_max`: The maximum price of orders to include (optional)
+`page`: The page number to return (optional)
+`offset`: The number of orders to skip before returning results (optional)
+
+```markdown
+curl -X 'GET' \
+'http://localhost:3000/orders?order_type=d&price_min=1&price_max=2&page=2&offset=4' \
+-H 'accept: */*'
+
+```
+
+## Example Response
+
+```json
+{
+  "status": true,
+  "message": "Orders retrieved",
+  "data": [
+    {
+      "id": "NDUwMzU5OTYzMjQ5MTcwOA==",
+      "price": {
+        "wei": "10100000000000000",
+        "ether": 0.0101
+      },
+      "expiration": 1682686496,
+      "maker": "0xD96f823F4ff5FAAfef7104D1BF608FaD165f2654",
+      "collection": {
+        "id": "1894a4d6-7108-4aba-b0ff-2536ffb90c88",
+        "name": "HAPE PRIME",
+        "description": null,
+        "symbol": "HAPE",
+        "admin": null,
+        "floorPrice": {
+          "min": "10100000000000000"
+        },
+        "websiteLink": "https://hape.io/",
+        "facebookLink": null,
+        "instagramLink": "https://instagram.com/hapesocial",
+        "telegramLink": null,
+        "mediumLink": null,
+        "discordLink": "https://discord.gg/hape",
+        "isVerified": true,
+        "isExplicit": false,
+        "logoURI": "https://static.looksnice.org/0x4Db1f25D3d98600140dfc18dEb7515Be5Bd293Af/0xca04876aede8e9caf5222b3ce2d8969b0d468a34e0531110abfc6c593257477e",
+        "bannerURI": "https://static.looksnice.org/0x4Db1f25D3d98600140dfc18dEb7515Be5Bd293Af/0xff61b364d1b6ba7381e8bec4724e32871e689764cea90881be9bbd84e34f4a97"
+      },
+      "order": {
+        "id": "NDUwMzU5OTYzMjQ5MTcwOA==",
+        "hash": "0x685045c2e908812ea4a3c00479a1b782a54d4e308bb5cb2b873f94f8f4af087e",
+        "quoteType": 0,
+        "globalNonce": "0",
+        "subsetNonce": "0",
+        "currency": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "startTime": 1682685596,
+        "itemIds": [],
+        "amounts": [
+          "1"
+        ]
+      },
+      "item": {}
+    }
+  ],
+  "meta": {
+    "totalItems": 112,
+    "itemCount": 1,
+    "itemsPerPage": 1,
+    "totalPages": 112,
+    "currentPage": 2
+  }
+}
+```
+
+- `status`: A boolean indicating whether the request was successful or not.
+- `message`: A message describing the result of the request.
+- `data`: An array of orders that match the query parameters. Each order object contains the following properties:
+    - `id`: The ID of the order.
+    - `price`: An object containing the price of the order in both wei and ether.
+    - `expiration`: The expiration date of the order.
+    - `maker`: The address of the order maker.
+    - `collection`: An object containing information about the collection the NFT belongs to. The `id` property is the
+      ID of the collection, while `name`, `description`, `symbol`, `admin`, and `floorPrice` provide additional
+      information about the collection and its floor price.
+    - `item`: An object containing information about the NFT being ordered. The `id` property is the ID of the NFT, but
+      in this case it is null.
+
+- `meta`: An object containing metadata about the response. The properties include:
+    - `totalItems`: The total number of items that match the query parameters.
+    - `itemCount`: The number of items returned in the current response.
+    - `itemsPerPage`: The number of items returned per page.
+    - `totalPages`: The total number of pages that can be returned.
+    - `currentPage`: The current page of the response. In this case, it is the fourth page.
+
+# Background Job
+
+`handleCron()`
+This function is a cron job that runs every 10 minutes. It retrieves a list of events from the looksrareService and adds
+each event to a Bull queue using the eventsQueue.add() method. This function is typically used to process events
+asynchronously and to avoid overloading the server with requests.
+
+## Behavior
+This function executes the following steps:
+
+Retrieve a list of events from the looksrareService using the getEvents() method.
+If the getEvents() method returns a successful response with data, loop through each event in the data.
+Add each event to a Bull queue using the eventsQueue.add() method, passing the event object and the name of the job to be executed as arguments.
+Log a message indicating that a job has been added to the queue for the current event.
+
 # Solution 2:Storing and Retrieving Data with Redis and Node.js
 
 ## Data
@@ -324,6 +452,28 @@ We then loop through the response and create an array of objects with the `follo
 `collection_id`.
 
 We return this data in an object with the key `data` and the value being the array of objects.
+
+1. GET method to retrieve the top entries
+   The endpoint is http://localhost:3000/leaderboard/entries
+
+   The response contains the following properties:
+
+   `status`: A boolean indicating whether the request was successful or not.
+   `message`: A message describing the result of the request.
+   `data`: An array of objects representing the top entries on the leaderboard.
+   Each object contains the following properties:
+   `follower_id`: The ID of the follower associated with the entry.
+   `entry_id`: The ID of the entry.
+2. GET method to retrieve the top collections
+   The endpoint is http://localhost:3000/leaderboard/collections
+   The response contains the following properties:
+
+   `status`: A boolean indicating whether the request was successful or not.
+   `message`: A message describing the result of the request.
+   `data`: An array of objects representing the top collections on the leaderboard.
+   Each object contains the following properties:
+   `follower_id`: The ID of the follower associated with the collection.
+   `collection_id`: The ID of the collection.
 
 ## Error Handling
 

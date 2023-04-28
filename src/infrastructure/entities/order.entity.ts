@@ -56,7 +56,7 @@ export class Order extends AbstractEntity {
   @Column('simple-array')
   amounts: string[];
 
-  @Column('simple-array')
+  @Column({ type: 'text', array: true, nullable: true })
   itemIds: string[];
 
   @Column({ nullable: true })

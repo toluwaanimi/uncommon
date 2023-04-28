@@ -18,10 +18,16 @@ export class EventsProcessor {
     private readonly eventRepository: Repository<Event>,
   ) {}
 
+  /**
+   * This function processes a single event
+   * @param {Job} job - The job to process
+   * @returns {Promise<void>}
+   */
   @Process('processEvent')
   async processEventsSingle(job: Job<any>) {
     const { data } = job;
 
+    // Check if the event already exists in the database
     const existingEvent = await this.eventRepository.findOne({
       where: {
         id: data.id,
@@ -29,10 +35,12 @@ export class EventsProcessor {
     });
 
     if (!existingEvent) {
+      // If the event does not exist, start a new transaction to save the event, collection, order, and token entities to the database
       const queryRunner = AppDataSource.createQueryRunner();
       await queryRunner.connect();
       await queryRunner.startTransaction();
       try {
+        // Save the event entity to the database
         const event = await queryRunner.manager.save(Event, {
           id: data.id,
           from: data.from,
@@ -40,6 +48,8 @@ export class EventsProcessor {
           hash: data.hash,
           to: data.to,
         });
+
+        // Save the collection entity to the database
         const collection = await queryRunner.manager.save(Collection, {
           id: uuidv4(),
           name: data.collection.name,
@@ -60,6 +70,8 @@ export class EventsProcessor {
           logoURI: data.collection.logoURI,
           eventId: event.id,
         });
+
+        // Save the order entity to the database
         await queryRunner.manager.save(Order, {
           id: data.order.id,
           hash: data.order.hash,
@@ -83,22 +95,30 @@ export class EventsProcessor {
           status: data.order.status,
           collectionId: collection.id,
         });
-        await queryRunner.manager.save(Token, {
-          id: data.token.id.toString(),
-          tokenId: data.token.tokenId,
-          isExplicit: data.token.isExplicit,
-          isAnimated: data.token.isAnimated,
-          flag: data.token.flag,
-          name: data.token.name,
-          description: data.token.description,
-          imageURI: data.token.imageURI,
-          collectionId: collection.id,
-        });
+
+        // Save the token entity to the database
+        if (data.token) {
+          await queryRunner.manager.save(Token, {
+            id: data.token.id.toString(),
+            tokenId: data.token.tokenId,
+            isExplicit: data.token.isExplicit,
+            isAnimated: data.token.isAnimated,
+            flag: data.token.flag,
+            name: data.token.name,
+            description: data.token.description,
+            imageURI: data.token.imageURI,
+            collectionId: collection.id,
+          });
+        }
+
+        // Commit the transaction
         await queryRunner.commitTransaction();
       } catch (e) {
+        console.log(e);
+        // Rollback the transaction if an error occurs
         await queryRunner.rollbackTransaction();
       } finally {
-        // you need to release query runner which is manually created:
+        // Release the query runner
         await queryRunner.release();
       }
     }
