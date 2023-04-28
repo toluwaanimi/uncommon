@@ -301,6 +301,7 @@ In summary, BullJS is a powerful tool for managing background jobs in Node.js, a
 convenient way to monitor and manage your jobs. By using BullJS, you can create reliable and scalable Node.js
 applications that can handle a variety of tasks and background jobs.
 
+![e2e](./bull.png)
 # Orders API Endpoint
 
 This API endpoint allows you to fetch orders for a given collection and filter them by order type, price range, and
