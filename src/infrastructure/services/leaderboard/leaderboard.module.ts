@@ -9,6 +9,7 @@ import { envConfig } from '../../config/environment-config/environment.config';
       config: {
         host: envConfig.getRedisURL(),
         port: envConfig.getRedisPort(),
+        password: envConfig.getRedisPassword(),
       },
     }),
   ],

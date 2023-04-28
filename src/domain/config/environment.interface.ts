@@ -5,4 +5,5 @@ export interface IEnvironmentInterface {
   getPostgresURL(): string; // Method to retrieve the Postgres URL
   getRedisURL(): string; // Method to retrieve the Redis URL
   getRedisPort(): number; // Method to retrieve the Redis port number
+  getRedisPassword(): string; // Method to retrieve the Redis password
 }

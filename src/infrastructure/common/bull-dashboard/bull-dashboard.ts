@@ -13,6 +13,7 @@ const {
 const connectionOptions = {
   host: envConfig.getRedisURL(),
   port: envConfig.getRedisPort(),
+  password: envConfig.getRedisPassword(),
 };
 
 // Create an array of Bull queues with the given options

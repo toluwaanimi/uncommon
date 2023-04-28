@@ -13,6 +13,7 @@ import { envConfig } from '../../config/environment-config/environment.config';
       redis: {
         host: envConfig.getRedisURL(),
         port: envConfig.getRedisPort(),
+        password: envConfig.getRedisPassword(),
       },
     }),
     BullModule.registerQueue({

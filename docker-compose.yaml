@@ -1,35 +1,41 @@
-version: '3'
+version: '3'  # Specifies the version of the docker-compose file syntax being used
+
 services:
-  uncommon_main:
-    container_name: uncommon
-    image: postgres:13
-    restart: always
-    environment:
-      POSTGRES_DB: uncommon
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: password
-    ports:
-      - "5433:5432"
-    volumes:
-      - uncommon_main:/var/lib/postgresql/data
-  uncommon_test:
-    container_name: uncommon_test
-    image: postgres:13
-    restart: always
-    environment:
-      POSTGRES_DB: uncommon_test
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: password
-    ports:
-      - "5431:5432"
-    volumes:
-      - uncommon_test:/var/lib/postgresql/data
+  web:  # Defines a service called 'web'
+    env_file: .env  # Loads environment variables from the '.env' file
+    # build: .  # Builds an image from the Dockerfile in the current directory
 
-  uncommon_redis:
-    image: redis:6.0-alpine
-    ports:
-      - "6377:6379"
+  uncommon_main:  # Defines a service called 'uncommon_main'
+    container_name: uncommon  # Specifies the name for the container running this service
+    image: postgres:13  # Specifies the Docker image to use for this service
+    restart: always  # Specifies that the container should always be restarted if it stops
+    environment:  # Specifies environment variables for the container
+      POSTGRES_DB: uncommon  # Sets the name of the database
+      POSTGRES_USER: root  # Sets the username for the database
+      POSTGRES_PASSWORD: password  # Sets the password for the database
+    ports:  # Specifies port mappings for the container
+      - "5433:5432"  # Maps port 5432 in the container to port 5433 on the host machine
+    volumes:  # Specifies volume mappings for the container
+      - uncommon_main:/var/lib/postgresql/data  # Maps a named volume to the '/var/lib/postgresql/data' directory in the container
 
-volumes:
-  uncommon_main:
-  uncommon_test:
+  uncommon_test:  # Defines a service called 'uncommon_test'
+    container_name: uncommon_test  # Specifies the name for the container running this service
+    image: postgres:13  # Specifies the Docker image to use for this service
+    restart: always  # Specifies that the container should always be restarted if it stops
+    environment:  # Specifies environment variables for the container
+      POSTGRES_DB: uncommon_test  # Sets the name of the database
+      POSTGRES_USER: root  # Sets the username for the database
+      POSTGRES_PASSWORD: password  # Sets the password for the database
+    ports:  # Specifies port mappings for the container
+      - "5431:5432"  # Maps port 5432 in the container to port 5431 on the host machine
+    volumes:  # Specifies volume mappings for the container
+      - uncommon_test:/var/lib/postgresql/data  # Maps a named volume to the '/var/lib/postgresql/data' directory in the container
+
+  uncommon_redis:  # Defines a service called 'uncommon_redis'
+    image: redis:6.0-alpine  # Specifies the Docker image to use for this service
+    ports:  # Specifies port mappings for the container
+      - "6377:6379"  # Maps port 6379 in the container to port 6377 on the host machine
+
+volumes:  # Defines named volumes for the services to use
+  uncommon_main:  # Defines a named volume called 'uncommon_main'
+  uncommon_test:  # Defines a named volume called 'uncommon_test'

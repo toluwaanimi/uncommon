@@ -21,7 +21,11 @@ class EnvironmentConfig implements IEnvironmentInterface {
   }
 
   getRedisURL(): string {
-    return env.get('REDIS_URL').asString();
+    return env.get('REDIS_HOST').asString();
+  }
+
+  getRedisPassword(): string {
+    return env.get('REDIS_PASSWORD').asString();
   }
 }
 

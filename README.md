@@ -415,11 +415,13 @@ each event to a Bull queue using the eventsQueue.add() method. This function is 
 asynchronously and to avoid overloading the server with requests.
 
 ## Behavior
+
 This function executes the following steps:
 
 Retrieve a list of events from the looksrareService using the getEvents() method.
 If the getEvents() method returns a successful response with data, loop through each event in the data.
-Add each event to a Bull queue using the eventsQueue.add() method, passing the event object and the name of the job to be executed as arguments.
+Add each event to a Bull queue using the eventsQueue.add() method, passing the event object and the name of the job to
+be executed as arguments.
 Log a message indicating that a job has been added to the queue for the current event.
 
 # Solution 2:Storing and Retrieving Data with Redis and Node.js
@@ -602,3 +604,25 @@ describe('getOrderByFilter', () => {
 ![e2e](./test-case.png)
 The tests were run and all tests passed. The functions are working correctly and being used correctly by the
 application. The configuration files for the adapters are also configurable and can be modified as needed.
+
+# Deployment to Staging Heroku
+
+The deployed application is on `https://uncommon-deployment.herokuapp.com/`
+
+The swagger docs can be viewed on `https://uncommon-deployment.herokuapp.com/docs`
+
+The bull dashboard can be viewed on `https://uncommon-deployment.herokuapp.com/admin/queues`
+
+The app is built using Node.js and runs on a Docker container.
+
+# Workflow
+The deployment workflow is triggered by a push to the main branch. The deploy-staging job runs only if the branch being
+pushed to is main. The job is executed on an Ubuntu operating system.
+
+
+# Secrets
+The deployment workflow requires the following secrets to be set in the GitHub repository:
+
+`HEROKU_API_KEY`: The Heroku API key used for authentication
+
+`HEROKU_APP_NAME_STAGING`: The name of the app on the Heroku staging cluster

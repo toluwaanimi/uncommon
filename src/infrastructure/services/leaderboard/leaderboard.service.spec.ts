@@ -22,6 +22,7 @@ describe('LeaderboardService', () => {
           config: {
             host: envConfig.getRedisURL(),
             port: envConfig.getRedisPort(),
+            password: envConfig.getRedisPassword(),
           },
         }),
       ],

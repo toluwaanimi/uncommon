@@ -1,0 +1,30 @@
+name: Build and Deploy to Staging Cluster  # Name of the workflow
+
+on:
+  push:  # Event that triggers the workflow
+    branches:
+      - main  # The workflow runs only when code is pushed to the 'main' branch
+
+jobs:
+  deploy-staging:  # Name of the job
+    if: github.ref == 'refs/heads/main'  # The job runs only when code is pushed to the 'main' branch
+    runs-on: ubuntu-latest  # Operating system to run the job on
+    steps:
+      - uses: actions/checkout@v1  # Checks out the code from the Git repository
+
+      - name: Login to Heroku Container Registry  # Name of the step
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}  # Heroku API key stored as a secret in the GitHub repository
+        run: heroku container:login  # Authenticates the Heroku CLI to the Heroku container registry
+
+      - name: Build and push to Heroku Container Registry  # Name of the step
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}  # Heroku API key stored as a secret in the GitHub repository
+        run: heroku container:push -a ${{ secrets.HEROKU_APP_NAME_STAGING }}  web  # Builds a Docker image of the app and pushes it to the Heroku container registry
+
+      - name: Publish New Release  # Name of the step
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}  # Heroku API key stored as a secret in the GitHub repository
+        run: |
+          heroku container:release -a ${{ secrets.HEROKU_APP_NAME_STAGING }}  web  # Releases the latest version of the app on the Heroku staging cluster
+          echo "You can now access the new staging release of ${{ secrets.HEROKU_APP_NAME_STAGING }}"  # Outputs a message indicating that the deployment was successful
