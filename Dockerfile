@@ -21,4 +21,4 @@ COPY . .
 RUN npm run build
 
 # Specifies the command to run when the container starts - in this case, it runs 'npm run start:prod'
-CMD ["npm", "run", "start:prod"]
+CMD ["npm", "run", "start"]
