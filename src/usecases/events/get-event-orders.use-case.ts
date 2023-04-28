@@ -110,9 +110,11 @@ export class GetEventOrdersUseCase {
       }),
     );
 
+    const filteredOrders = formattedOrders.filter((order) => order !== null);
+
     // Return the formatted orders along with the metadata about the query results
     return {
-      data: formattedOrders,
+      data: filteredOrders,
       meta: items.meta,
     };
   }

@@ -1,20 +1,30 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString, IsNumber, Min } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { EventType } from '../../../domain/adapters/looksrare.interface';
 
+// Define a custom validator function to validate the EventType type
 // This class defines the data transfer object (DTO) for filtering orders
 export class OrderFilterParamsDTO {
   // ApiProperty decorator provides metadata for the Swagger UI
   @ApiProperty({
     description: 'The type of the order',
     required: false,
-    type: String,
+    enum: [
+      'LIST',
+      'SALE',
+      'CANCEL_LIST',
+      'OFFER',
+      'CANCEL_OFFER',
+      'MINT',
+      'TRANSFER',
+    ],
   })
   // IsOptional decorator indicates that this property is not required
   @IsOptional()
-  // IsString decorator ensures that the value is a string
   @IsString()
-  order_type?: string;
+  // IsString decorator ensures that the value is a string
+  order_type?: EventType;
 
   @ApiProperty({
     description: 'The minimum price',

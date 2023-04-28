@@ -80,7 +80,7 @@ install Postgres on your local PC which explains how to create a database
 
 ## Start Development
 
-Kindly clone the repo `https://github.com/toluwaanimi/uncommon-task.git`
+Kindly clone the repo `https://github.com/toluwaanimi/uncommon.git`
 
 ### Installation
 
@@ -317,12 +317,11 @@ pagination.
 ascending order.
 `price_min`: The minimum price of orders to include (optional)
 `price_max`: The maximum price of orders to include (optional)
-`page`: The page number to return (optional)
 `offset`: The number of orders to skip before returning results (optional)
 
 ```markdown
 curl -X 'GET' \
-'http://localhost:3000/orders?order_type=d&price_min=1&price_max=2&page=2&offset=4' \
+'http://localhost:3000/orders?order_type=d&price_min=1&price_max=2&offset=4' \
 -H 'accept: */*'
 
 ```
