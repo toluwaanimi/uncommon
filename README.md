@@ -139,7 +139,7 @@ To run a docker image of Postgres and Redis
 Swagger is a popular tool for documenting APIs, and it provides a user-friendly interface that allows developers to
 explore and test API endpoints. In order to view Swagger documentation for an API.
 
-The route http://localhost:3000/docs can be used to view the Swagger documentation
+The URL http://localhost:3000/docs can be used to view the Swagger documentation or `https://uncommon-deployment.herokuapp.com/docs`
 
 # Domain Driven Architecture
 
