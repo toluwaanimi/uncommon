@@ -139,7 +139,8 @@ To run a docker image of Postgres and Redis
 Swagger is a popular tool for documenting APIs, and it provides a user-friendly interface that allows developers to
 explore and test API endpoints. In order to view Swagger documentation for an API.
 
-The URL http://localhost:3000/docs can be used to view the Swagger documentation or `https://uncommon-deployment.herokuapp.com/docs`
+The URL http://localhost:3000/docs can be used to view the Swagger documentation
+or `https://uncommon-deployment.herokuapp.com/docs`
 
 # Domain Driven Architecture
 
@@ -302,6 +303,7 @@ convenient way to monitor and manage your jobs. By using BullJS, you can create 
 applications that can handle a variety of tasks and background jobs.
 
 ![e2e](./bull.png)
+
 # Orders API Endpoint
 
 This API endpoint allows you to fetch orders for a given collection and filter them by order type, price range, and
@@ -459,13 +461,39 @@ We return this data in an object with the key `data` and the value being the arr
    The endpoint is http://localhost:3000/leaderboard/entries
 
    The response contains the following properties:
+   `status`
+   A boolean value indicating whether the request was successful or not. true indicates success, while false indicates
+   failure.
 
-   `status`: A boolean indicating whether the request was successful or not.
-   `message`: A message describing the result of the request.
-   `data`: An array of objects representing the top entries on the leaderboard.
-   Each object contains the following properties:
-   `follower_id`: The ID of the follower associated with the entry.
-   `entry_id`: The ID of the entry.
+`message`
+A message describing the result of the request. In this case, the message is "Top collections retrieved".
+
+`data`
+An array of objects representing the top entries on the leaderboard.
+Each object contains two properties:
+
+`entry_id`: A string representing the ID of the entry.
+`score`: A string representing the score of the entry.
+
+```json
+
+{
+  "status": true,
+  "message": "Top entries retrieved",
+  "data": {
+    "eth:0xffc177a9c93a8462eced6446e9c29a4df3cd40d7f569e2d0c9bdb6879e4c3380": 1,
+    "eth:0xff8cc50ae00c29bbda4b7c04655728c1fb0e927a1b72248e9462fbff9debadbe": 1,
+    "eth:0xfe9dfaeed57a8af9977067ebae141bd8625315b4f1a4781b996342e8c1b0d4e9": 1,
+    "eth:0xfe93971c9baa743894a625f403336b79be9869155dd9ddce31b652d9e6fabd2d": 1,
+    "eth:0xfe910913a5933806b72889e09cc76582d5a3c8d98b95777103f25a219b878b35": 1,
+    "eth:0xfe5ef5c9d394356cd6a10fdbe7d6ccef7ac5c49066d95fe8f6552c9e22d9349c": 1,
+    "eth:0xfe35d443bb846b4f1e78faa64d745450974251af37f5dd8c76078bf9b145fe04": 1,
+    "eth:0xfe32f544bd4fe4aa780ac6932b372ee995bde2716a8063b87ffcb19b338b3a89": 1,
+    "eth:0xfc673d353a11bf627682de9769c381c55c68eed09cd32e5a5831840d4b786a11": 1,
+    "eth:0xfb608873539b1e2afc56de4ecc6a0758eee5953c1073096555a54ddc51dd430a": 1
+  }
+}
+```
 2. GET method to retrieve the top collections
    The endpoint is http://localhost:3000/leaderboard/collections
    The response contains the following properties:
@@ -474,9 +502,28 @@ We return this data in an object with the key `data` and the value being the arr
    `message`: A message describing the result of the request.
    `data`: An array of objects representing the top collections on the leaderboard.
    Each object contains the following properties:
-   `follower_id`: The ID of the follower associated with the collection.
-   `collection_id`: The ID of the collection.
+   `collection`: A string representing the collection ID.
+   `count`: An integer representing the count of items in the collection.
 
+```json
+
+{
+  "status": true,
+  "message": "Top collections retrieved",
+  "data": {
+    "eth:0x34d85c9cdeb23fa97cb08333b511ac86e1c4e258": 117,
+    "eth:0x77372a4cc66063575b05b44481f059be356964a4": 21,
+    "eth:0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85": 8,
+    "eth:0xe6a05f25a051a90d5d144c04f783f6999e48e32d": 4,
+    "eth:0xc36cf0cfcb5d905b8b513860db0cfe63f6cf9f5c": 4,
+    "eth:0x764aeebcf425d56800ef2c84f2578689415a2daa": 4,
+    "eth:0x36d7b711390d34e8fe26ad8f2bb14e7c8f0c56e9": 4,
+    "eth:0xc67b9897d793a823f0e9cf850aa1b0d23e3f8d09": 3,
+    "eth:0xc5b52253f5225835cc81c52cdb3d6a22bc3b0c93": 3,
+    "eth:0xad5ba4029e65096ccc22933bbe95bd27f0f03734": 3
+  }
+}
+```
 ## Error Handling
 
 If there is an error when retrieving data from Redis, we throw a `BadRequestException` with the
@@ -616,11 +663,12 @@ The bull dashboard can be viewed on `https://uncommon-deployment.herokuapp.com/a
 The app is built using Node.js and runs on a Docker container.
 
 # Workflow
+
 The deployment workflow is triggered by a push to the main branch. The deploy-staging job runs only if the branch being
 pushed to is main. The job is executed on an Ubuntu operating system.
 
-
 # Secrets
+
 The deployment workflow requires the following secrets to be set in the GitHub repository:
 
 `HEROKU_API_KEY`: The Heroku API key used for authentication

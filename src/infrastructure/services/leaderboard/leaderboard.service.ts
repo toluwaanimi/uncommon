@@ -15,18 +15,28 @@ export class LeaderboardService implements ILeaderBoard {
     this.initializeData().then();
   }
 
-  /**
-   * Initializes the Redis database with data from the leaderBoard array
-   */
+  // This function initializes the Redis database with data from the leaderBoard array.
   private async initializeData(): Promise<void> {
-    leaderBoard.forEach((item: DataItem) => {
-      const { entry_id, collection_id, follower_id } = item;
+    // Loop through each entry in the leaderBoard array.
+    for (let i = 0; i < leaderBoard.length; i++) {
+      const entry = leaderBoard[i];
+      // Construct the Redis key for the current entry.
+      const entryKey = `${entry.id}`;
+      // Construct the Redis key for the current entry's collection.
+      const collectionKey = `${entry.collection_id}`;
 
-      // Increment the score of a member in a sorted set by the given increment.
-      // If the member does not exist in the sorted set, it is added with increment as its score
-      this.redisService.zincrby('entries', follower_id, entry_id);
-      this.redisService.zincrby('collections', follower_id, collection_id);
-    });
+      // Add the current entry's ID to the collection set.
+      await this.redisService.sadd(collectionKey, entry.id);
+
+      // Increment the follower count for the current entry in the entries:followers sorted set.
+      await this.redisService.zincrby('entries:followers', 1, entryKey);
+      // Increment the follower count for the current entry's collection in the collections:followers sorted set.
+      await this.redisService.zincrby(
+        'collections:followers',
+        1,
+        collectionKey,
+      );
+    }
   }
 
   /**
@@ -35,25 +45,20 @@ export class LeaderboardService implements ILeaderBoard {
    */
   async getTopCollections(): Promise<ServiceInterface> {
     try {
-      const response = await this.redisService.zrevrange(
-        'collections',
+      const result = await this.redisService.zrevrange(
+        'collections:followers',
         0,
         9,
         'WITHSCORES',
       );
 
-      const data = response.reduce((acc, curr, index, array) => {
-        if (index % 2 === 0) {
-          acc.push({
-            follower_id: array[index + 1],
-            collection_id: curr,
-          });
-        }
-        return acc;
-      }, []);
-      return {
-        data: data,
-      };
+      const collections = {};
+      for (let i = 0; i < result.length; i += 2) {
+        const collectionKey = result[i];
+        const count = parseInt(result[i + 1], 10);
+        collections[collectionKey] = count;
+      }
+      return { data: collections };
     } catch (e) {
       throw new BadRequestException('Something went wrong');
     }
@@ -65,23 +70,21 @@ export class LeaderboardService implements ILeaderBoard {
    */
   async getTopEntries(): Promise<ServiceInterface> {
     try {
-      const response = await this.redisService.zrevrange(
-        'entries',
+      const result = await this.redisService.zrevrange(
+        'entries:followers',
         0,
         9,
         'WITHSCORES',
       );
-      const data = response.reduce((acc, curr, index, array) => {
-        if (index % 2 === 0) {
-          acc.push({
-            follower_id: array[index + 1],
-            entry_id: curr,
-          });
-        }
-        return acc;
-      }, []);
+
+      const entries = {};
+      for (let i = 0; i < result.length; i += 2) {
+        const entryKey = result[i];
+        const count = parseInt(result[i + 1], 10);
+        entries[entryKey] = count;
+      }
       return {
-        data,
+        data: entries,
       };
     } catch (e) {
       throw new BadRequestException('Something went wrong');
